@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>數學學習疑難與有效教學示例｜檢索</title>
+
+<!--
+  file:// 直接開啟時 fetch 會被 CORS 擋，改用以下兩行載入 build_data.py --js 產出的檔案。
+  放在 http 伺服器上時保持註解，程式會走 fetch。
+  <script src="examples.js"></script>
+  <script src="pages.js"></script>
+-->
+
+<style>
+:root{
+  --paper:#fbfbf9;
+  --ink:#1b2430;
+  --ink-2:#4a5766;
+  --ink-3:#7c8794;
+  --rule:#dfe4e8;
+  --rule-2:#eef1f3;
+  --blue:#2b5f8a;
+  --plum:#7a3f6d;
+  --hit:#ffe97a;
+  --card:#ffffff;
+  --radius:3px;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Hiragino Sans TC",
+         system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.75;
+  /* 方格紙底：對應數學科的作業紙，僅作極淡的環境紋理 */
+  background-image:
+    linear-gradient(var(--rule-2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--rule-2) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 80px}
+
+/* ── 頁首 ───────────────────────────────── */
+header.masthead{padding:38px 0 20px;border-bottom:2px solid var(--ink)}
+.eyebrow{
+  font-size:12px;letter-spacing:.22em;color:var(--ink-3);
+  text-transform:none;margin:0 0 8px;font-weight:600;
+}
+h1{
+  margin:0;font-size:27px;font-weight:800;letter-spacing:-.01em;line-height:1.35;
+}
+.subtitle{margin:6px 0 0;color:var(--ink-2);font-size:14px}
+
+/* ── 控制列 ─────────────────────────────── */
+.controls{
+  position:sticky;top:0;z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--rule);
+  padding:14px 0 12px;margin-bottom:22px;
+}
+.ctl-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.ctl-row:last-child{margin-bottom:0}
+.ctl-label{
+  font-size:11px;letter-spacing:.14em;color:var(--ink-3);
+  font-weight:700;min-width:52px;
+}
+
+.searchbox{position:relative;flex:1 1 260px;min-width:220px}
+.searchbox input{
+  width:100%;padding:9px 34px 9px 12px;
+  border:1px solid var(--rule);border-radius:var(--radius);
+  background:var(--card);color:var(--ink);
+  font-family:var(--sans);font-size:15px;
+}
+.searchbox input:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(43,95,138,.12)}
+.searchbox button{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  border:0;background:none;color:var(--ink-3);cursor:pointer;
+  font-size:17px;line-height:1;padding:6px 8px;border-radius:var(--radius);
+}
+.searchbox button:hover{color:var(--ink)}
+
+.chip{
+  border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+  padding:5px 11px;border-radius:var(--radius);cursor:pointer;
+  font-family:var(--sans);font-size:13px;line-height:1.5;
+  transition:background .12s,border-color .12s,color .12s;
+}
+.chip:hover{border-color:var(--ink-3);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.theme[aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
+
+.tabs{display:flex;gap:0;border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden}
+.tabs .chip{border:0;border-right:1px solid var(--rule);border-radius:0}
+.tabs .chip:last-child{border-right:0}
+
+.tally{
+  font-size:13px;color:var(--ink-3);margin-left:auto;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.tally b{color:var(--ink);font-weight:700}
+
+/* ── 卡片 ───────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);
+  margin-bottom:14px;display:flex;overflow:hidden;
+}
+/* 書口索引：左緣的頁碼帶，標出該示例在原書中的頁碼區間 */
+.spine{
+  flex:0 0 44px;border-right:1px solid var(--rule);
+  background:linear-gradient(180deg,#f7f8f9,#fff);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:14px 0;gap:2px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+}
+.spine .pg{font-size:13px;color:var(--ink);font-weight:600}
+.spine .bar{width:2px;flex:1;min-height:14px;background:var(--rule);margin:3px 0}
+.card-body{flex:1;padding:16px 18px;min-width:0}
+
+.card h2{margin:0;font-size:19px;font-weight:700;line-height:1.4}
+.byline{margin:3px 0 10px;font-size:13px;color:var(--ink-2)}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tag{
+  font-size:12px;padding:2px 8px;border-radius:var(--radius);
+  border:1px solid var(--rule);color:var(--ink-2);background:#fafbfc;
+}
+.tag.grade{border-color:var(--ink);color:var(--ink);font-weight:600}
+.tag.theme{border-color:#c3d5e3;background:#f2f7fa;color:var(--blue)}
+
+/* 導言 */
+.intro{
+  margin:0 0 12px;font-size:14px;line-height:1.8;color:var(--ink-2);
+  padding-left:11px;border-left:2px solid var(--rule);
+}
+
+/* 指標區 */
+.ind{border-top:1px solid var(--rule-2);padding-top:10px;margin-top:2px}
+.ind-line{display:flex;gap:9px;margin-bottom:7px;align-items:flex-start}
+.ind-kind{
+  flex:0 0 74px;font-size:11px;color:var(--ink-3);font-weight:700;
+  letter-spacing:.06em;padding-top:3px;
+}
+.ind-text{flex:1;font-size:13.5px;color:var(--ink-2);line-height:1.65;min-width:0}
+code.code{
+  font-family:var(--mono);font-size:12.5px;background:#eef2f5;color:var(--blue);
+  padding:1px 5px;border-radius:2px;margin-right:5px;white-space:nowrap;
+}
+code.code.v105{background:#f4eef2;color:var(--plum)}
+.ver{font-size:11px;color:var(--ink-3);margin-left:4px}
+
+/* 展開區 */
+.more{border-top:1px solid var(--rule-2);margin-top:12px;padding-top:10px;display:none}
+.card.open .more{display:block}
+.sec{margin-bottom:14px}
+.sec:last-child{margin-bottom:0}
+.sec h3{
+  margin:0 0 6px;font-size:12px;letter-spacing:.12em;color:var(--ink-3);font-weight:700;
+}
+.sec ol,.sec ul{margin:0;padding-left:1.35em;font-size:13.5px;color:var(--ink-2)}
+.sec li{margin-bottom:4px}
+.src{font-size:11px;color:var(--ink-3);margin-left:5px}
+.mis li::marker{color:var(--plum);font-weight:700}
+
+/* 全文命中 */
+.hits{border-top:1px solid var(--rule-2);margin-top:12px;padding-top:10px}
+.hit{display:flex;gap:9px;margin-bottom:7px;font-size:13.5px;align-items:flex-start}
+.hit .p{
+  flex:0 0 40px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);
+  padding-top:3px;text-align:right;
+}
+.hit .t{flex:1;color:var(--ink-2);line-height:1.65;min-width:0}
+
+mark{background:var(--hit);color:var(--ink);padding:0 1px;border-radius:2px}
+
+.actions{margin-top:12px;display:flex;gap:9px;flex-wrap:wrap}
+.btn{
+  border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+  padding:5px 11px;border-radius:var(--radius);cursor:pointer;
+  font-family:var(--sans);font-size:13px;text-decoration:none;display:inline-block;
+}
+.btn:hover{border-color:var(--ink-3);color:var(--ink)}
+
+.msg{
+  padding:34px 4px;color:var(--ink-2);font-size:14px;text-align:center;
+  border:1px dashed var(--rule);border-radius:var(--radius);background:rgba(255,255,255,.6);
+}
+.msg b{display:block;color:var(--ink);font-size:15px;margin-bottom:5px}
+.err{border-color:#d9b3b3;background:#fdf6f6}
+
+footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--rule);
+  font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+@media (max-width:640px){
+  body{background-image:none}
+  .wrap{padding:0 14px 60px}
+  h1{font-size:22px}
+  .spine{flex-basis:34px}
+  .card-body{padding:14px}
+  .ind-kind{flex-basis:62px}
+  .ctl-label{display:none}
+  .tally{width:100%;margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">國小中年級低成就學生</p>
+  <h1>數學學習疑難與有效教學示例</h1>
+  <p class="subtitle">依年級、主題、課綱指標或迷思概念查找示例。</p>
+</header>
+
+<div class="controls">
+  <div class="ctl-row">
+    <span class="ctl-label">搜尋</span>
+    <div class="searchbox">
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="輸入關鍵字，例如：等值分數、先乘除後加減、S-4-6">
+      <button id="clear" type="button" title="清除" aria-label="清除搜尋">×</button>
+    </div>
+    <div class="tabs" id="scope" role="group" aria-label="搜尋範圍"></div>
+  </div>
+
+  <div class="ctl-row">
+    <span class="ctl-label">年級</span>
+    <div class="tabs" id="grades" role="group" aria-label="年級"></div>
+    <span class="ctl-label" style="margin-left:8px">主題</span>
+    <div id="themes" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <span class="tally" id="tally"></span>
+  </div>
+</div>
+
+<main id="list"></main>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+"use strict";
+
+/* ══ 狀態 ══════════════════════════════════════════ */
+const S = {
+  examples: [],      // examples.json 的 examples 陣列
+  meta: {},
+  pages: null,       // pages.json，延遲載入
+  pagesLoading: false,
+  q: "",
+  grade: 0,          // 0 = 全部
+  themes: new Set(), // 空 = 全部
+  scope: "all",      // all | curr | mis | full
+  open: new Set()    // 已展開的示例 id
+};
+
+const SCOPES = [
+  ["all",  "全部"],
+  ["curr", "指標"],
+  ["mis",  "迷思概念"],
+  ["full", "全文"]
+];
+const THEME_LIST = ["數與計算","量與實測","空間與形狀","關係","資料與不確定性"];
+const GRADE_NAME = {3:"三年級", 4:"四年級"};
+
+/* ══ 正規化 ════════════════════════════════════════
+   中文檢索不斷詞：把全形轉半形、去掉所有空白、轉小寫之後直接 indexOf。
+   同時產生位置對照表 map，map[i] = 正規化字串第 i 字在原文的索引，
+   命中後可換算回原文位置，標示不會偏移。                            */
+function normalize(s){
+  const out = [], map = [];
+  for(let i = 0; i < s.length; i++){
+    let ch = s[i];
+    const c = s.charCodeAt(i);
+    if(c === 0x3000) continue;                              // 全形空白
+    if(c >= 0xFF01 && c <= 0xFF5E) ch = String.fromCharCode(c - 0xFEE0);
+    if(/\s/.test(ch)) continue;                             // 半形空白與換行
+    out.push(ch.toLowerCase());
+    map.push(i);
+  }
+  return { n: out.join(""), map: map };
+}
+
+/** 只要正規化後的字串，用於建 haystack（不需要位置） */
+function norm(s){ return normalize(s).n; }
+
+/** 在原文 text 中標示所有 q 的出現處，回傳已跳脫的 HTML */
+function mark(text, q){
+  if(!q) return esc(text);
+  const { n, map } = normalize(text);
+  const nq = norm(q);
+  if(!nq) return esc(text);
+
+  const spans = [];
+  let from = 0, idx;
+  while((idx = n.indexOf(nq, from)) !== -1){
+    spans.push([ map[idx], map[idx + nq.length - 1] + 1 ]);   // 換算回原文區間
+    from = idx + nq.length;
+  }
+  if(!spans.length) return esc(text);
+
+  let html = "", cur = 0;
+  for(const [a, b] of spans){
+    html += esc(text.slice(cur, a)) + "<mark>" + esc(text.slice(a, b)) + "</mark>";
+    cur = b;
+  }
+  return html + esc(text.slice(cur));
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+
+/* ══ haystack 分層 ═════════════════════════════════
+   三層隨 examples.json 一起進記憶體，全文層留在 pages.json 延遲載入。
+   結果快取在示例物件的 _hay 上，只算一次。                          */
+function hay(rec){
+  if(rec._hay) return rec._hay;
+  const c = rec.curriculum || {};
+  const allInd = []
+    .concat(c.learning_content || [], c.learning_performance || [],
+            c.basic_content || [], c.basic_performance || []);
+
+  const meta = [
+    rec.title,
+    rec.introduction || "",
+    (rec.keywords || []).join(" "),
+    (rec.themes || []).join(" "),
+    (rec.materials || []).join(" "),
+    rec.author ? [rec.author.name, rec.author.title, rec.author.school].join(" ") : "",
+    (rec.grade || []).map(g => GRADE_NAME[g] || "").join(" ")
+  ].join(" ");
+
+  const curr = allInd.map(x =>
+    [x.code, x.alias_in_source, x.source_text].filter(Boolean).join(" ")
+  ).join(" ");
+
+  const mis = []
+    .concat((rec.misconceptions || []).map(m => m.text),
+            (rec.strategies || []).map(s => s.title))
+    .join(" ");
+
+  rec._hay = { meta: norm(meta), curr: norm(curr), mis: norm(mis) };
+  return rec._hay;
+}
+
+/* ══ 資料載入 ══════════════════════════════════════ */
+// 資料檔與 PDF 皆在 Firebase Storage，與前端不同源，
+// 靠 bucket 的 CORS 設定（origin: ["*"]）放行。
+const FB_BASE  = "https://firebasestorage.googleapis.com/v0/b/upload-2a184.appspot.com/o/";
+const JSON_DIR = "m34";     // JSON 在 Storage 的虛擬目錄
+const PDF_BASE = FB_BASE;   // pdf.path 已含 "pdfs/" 前綴，不另加目錄
+
+/** 組出 Storage 的無 token 下載 URL。
+    路徑分隔符必須編成 %2F，否則端點會解讀為 REST 路徑層級而非物件名稱，
+    故用 encodeURIComponent（不保留斜線）而非 encodeURI。 */
+function fbUrl(path, bust){
+  const u = FB_BASE + encodeURIComponent(path) + "?alt=media";
+  return bust ? u + "&v=" + Date.now() : u;
+}
+
+/** 先看 build_data.py --js 塞進 window 的全域變數，沒有才 fetch。
+    Storage 對未指定 Cache-Control 的物件回 max-age=3600，
+    而 Console 上傳無法設定該標頭，故改以 query 破壞快取。
+    原本的 cache:"no-cache" 只作用於瀏覽器快取，對此無效，已移除。 */
+async function loadData(name, globalKey){
+  if(window[globalKey]) return window[globalKey];
+  const res = await fetch(fbUrl(JSON_DIR + "/" + name, true));
+  if(!res.ok) throw new Error(name + " 回應 " + res.status);
+  return res.json();
+}
+
+/** 全文層延遲載入：僅在 scope 涵蓋全文且已有關鍵字時觸發。
+    pagesLoading 兼作重入鎖，避免 debounce 期間連續輸入重複發請求。
+    失敗時把 S.pages 設為空物件而非留 null，否則每次輸入都會重打一次。 */
+async function ensurePages(){
+  if(S.pages || S.pagesLoading) return;
+  S.pagesLoading = true;
+  render();                                   // 讓 tally 顯示「載入全文中…」
+  try{
+    const data = await loadData("pages.json", "__PAGES__");
+    S.pages = data.pages || data;             // 見下方待確認事項
+  }catch(e){
+    console.error("pages.json 載入失敗", e);
+    S.pages = {};
+  }finally{
+    S.pagesLoading = false;
+    render();
+  }
+}
+/* ══ 連結解析 ══════════════════════════════════════ */
+// 依序嘗試「學校短網址 → Firebase 短網址 → 學校直連 → Firebase 直連」。
+//
+// 關鍵設計：探測目標與開啟目標分離。短網址本身不探測——對 supr.link 發出
+// 探測請求會被記為一次點擊，加上實際開啟就是重複計點，統計值會系統性偏高。
+// 改為探測該層對應的直連網址，可用性判斷等價，且不影響點擊統計。
+const LINK_CHAIN = [
+  { open: "school_html",     probe: "school_direct"   },
+  { open: "firebase_pdf",    probe: "firebase_direct" },
+  { open: "school_direct",   probe: "school_direct"   },
+  { open: "firebase_direct", probe: "firebase_direct" },
+];
+
+const linkHealth = new Map();  // url -> boolean，同一 session 每個網址只探測一次
+
+/** mode:"no-cors" 取得 opaque response，只在網路層失敗時 reject。
+    因此本函式偵測的是「主機是否回應」而非「檔案是否存在」，404 會被判為可達。
+    學校空間不開放 CORS，無法讀取 status，此為設計上的取捨。 */
+async function probeReachable(url, timeoutMs = 1500){
+  if(linkHealth.has(url)) return linkHealth.get(url);
+  let ok = false;
+  try{
+    await fetch(url, { mode: "no-cors", signal: AbortSignal.timeout(timeoutMs) });
+    ok = true;
+  }catch(e){ ok = false; }
+  linkHealth.set(url, ok);
+  return ok;
+}
+
+const linkOf = (links, label) => (links || []).find(l => l.label === label) || null;
+
+/** 回傳第一個「探測目標可達」的候選之開啟網址；全數不可達則回 null。 */
+async function resolveLink(links){
+  for(const step of LINK_CHAIN){
+    const open  = linkOf(links, step.open);
+    const probe = linkOf(links, step.probe);
+    if(!open || !probe) continue;          // 短網址未填時該層跳過
+    if(await probeReachable(probe.url)) return open.url;
+  }
+  return null;
+}
+
+/** 預設 href，供右鍵複製與中鍵開新分頁使用（這兩種操作不觸發下方委派）。 */
+function primaryLink(links){
+  for(const step of LINK_CHAIN){
+    const open = linkOf(links, step.open);
+    if(open) return open.url;
+  }
+  return "#";
+}
+
+/** 事件委派：綁在 document 上，不需與 render() 整合，重繪後仍有效。 */
+function installLinkDelegation(){
+  document.addEventListener("click", async (e) => {
+    const a = e.target.closest("a[data-ex]");
+    if(!a) return;
+    if(e.defaultPrevented || e.button !== 0 ||
+       e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    const rec = S.examples.find(x => x.id === a.dataset.ex);
+    if(!rec || !rec.links) return;         // 無 links 時退回 href 原生行為
+
+    e.preventDefault();
+    const url = await resolveLink(rec.links);
+    if(url) window.open(url, "_blank", "noopener");
+    else alert("學校空間、Firebase 與短網址服務目前都無法連線，請稍後再試。");
+  });
+}
+/* ══ 篩選與比對 ════════════════════════════════════ */
+function needFull(){ return S.scope === "all" || S.scope === "full"; }
+
+/** 回傳該示例的全文命中：[{p, t, i}]，i 為原文中的命中位置 */
+function fullHits(rec, nq){
+  if(!nq || !S.pages) return [];
+  const pages = S.pages[rec.id] || [];
+  const out = [];
+  for(const pg of pages){
+    const { n, map } = normalize(pg.t);
+    const idx = n.indexOf(nq);
+    if(idx !== -1) out.push({ p: pg.p, t: pg.t, i: map[idx] });
+  }
+  return out;
+}
+
+/** 主篩選：年級 → 主題 → 關鍵字（依 scope 決定比對哪幾層） */
+function filter(){
+  const nq = norm(S.q);
+  const rows = [];
+
+  for(const rec of S.examples){
+    if(S.grade && !(rec.grade || []).includes(S.grade)) continue;
+    if(S.themes.size && !(rec.themes || []).some(t => S.themes.has(t))) continue;
+
+    if(!nq){ rows.push({ rec, hits: [] }); continue; }
+
+    const h = hay(rec);
+    let ok = false;
+    if(S.scope === "all")       ok = h.meta.includes(nq) || h.curr.includes(nq) || h.mis.includes(nq);
+    else if(S.scope === "curr") ok = h.curr.includes(nq);
+    else if(S.scope === "mis")  ok = h.mis.includes(nq);
+
+    const hits = needFull() ? fullHits(rec, nq) : [];
+    if(ok || hits.length) rows.push({ rec, hits });
+  }
+  return rows;
+}
+
+/* ══ 渲染 ══════════════════════════════════════════ */
+function indLine(kind, items, cls){
+  if(!items || !items.length) return "";
+  const body = items.map(x => {
+    const v105 = x.version === "105" || /^\d-[a-z]/.test(x.code || "");
+    return '<div>' +
+      '<code class="code' + (v105 ? " v105" : "") + '">' + esc(x.code || "") + '</code>' +
+      (x.version ? '<span class="ver">' + esc(x.version) + ' 年版</span>' : "") +
+      (x.alias_in_source ? '<span class="ver">同 ' + esc(x.alias_in_source) + '</span>' : "") +
+      '<div>' + mark(x.source_text || "", S.q) + '</div>' +
+    '</div>';
+  }).join("");
+  return '<div class="ind-line"><div class="ind-kind">' + kind +
+         '</div><div class="ind-text ' + (cls || "") + '">' + body + '</div></div>';
+}
+
+function snippet(hit){
+  const R = 55;                                    // 命中位置前後各取 55 字
+  const a = Math.max(0, hit.i - R);
+  const b = Math.min(hit.t.length, hit.i + R);
+  const raw = hit.t.slice(a, b).replace(/\n+/g, " ");
+  return (a > 0 ? "…" : "") + raw + (b < hit.t.length ? "…" : "");
+}
+
+function card(row){
+  const r = row.rec, c = r.curriculum || {}, open = S.open.has(r.id);
+  const pgs = (r.pdf && r.pdf.pages) || [];
+  const a = r.author || {};
+
+  const tags =
+    (r.grade || []).map(g => '<span class="tag grade">' + (GRADE_NAME[g] || g) + '</span>').join("") +
+    (r.themes || []).map(t => '<span class="tag theme">' + esc(t) + '</span>').join("") +
+    (r.low_pass_years && r.low_pass_years.length
+      ? '<span class="tag">低通過率 ' + r.low_pass_years.join("、") + '</span>' : "");
+
+  const intro = (r.introduction || "").trim()
+    ? '<p class="intro">' + mark(r.introduction, S.q) + '</p>' : "";
+
+  // 導論一類的文件沒有課綱指標，整個 .ind 區塊就不輸出，避免留下空的分隔線
+  const indBody =
+    indLine("學習內容",     c.learning_content) +
+    indLine("學習表現",     c.learning_performance) +
+    indLine("基本學習內容", c.basic_content) +
+    indLine("基本學習表現", c.basic_performance);
+  const ind = indBody ? '<div class="ind">' + indBody + '</div>' : "";
+
+  const mis = (r.misconceptions || []).length
+    ? '<div class="sec"><h3>迷思概念（' + r.misconceptions.length + '）</h3><ol class="mis">' +
+      r.misconceptions.map(m =>
+        '<li>' + mark(m.text, S.q) +
+        (m.source ? '<span class="src">' + esc(m.source) + '</span>' : "") + '</li>').join("") +
+      '</ol></div>' : "";
+
+  const str = (r.strategies || []).length
+    ? '<div class="sec"><h3>教學策略</h3><ol>' +
+      r.strategies.map(s => '<li>' + mark(s.title, S.q) + '</li>').join("") +
+      '</ol></div>' : "";
+
+  const mat = (r.materials || []).length
+    ? '<div class="sec"><h3>教材教具</h3><ul><li>' +
+      r.materials.map(m => mark(m, S.q)).join("、") + '</li></ul></div>' : "";
+
+  const links = (r.external_links || []).length
+    ? '<div class="sec"><h3>延伸資源</h3><ul>' +
+      r.external_links.map(l =>
+        '<li><a class="btn" href="' + esc(l.url) + '" target="_blank" rel="noopener">' +
+        esc(l.label || l.url) + '</a>' +
+        (l.context ? '<span class="src">' + esc(l.context) + '</span>' : "") + '</li>').join("") +
+      '</ul></div>' : "";
+
+  const assess = (r.assessment_refs || []).length
+    ? '<div class="sec"><h3>施測期別</h3><ul><li>' +
+      r.assessment_refs.map(x => esc(x.period || x.raw)).join("、") + '</li></ul></div>' : "";
+
+  const hits = row.hits.length
+    ? '<div class="hits"><h3 class="sec" style="margin:0 0 6px">全文命中 ' + row.hits.length + ' 頁</h3>' +
+      row.hits.slice(0, 4).map(h =>
+        '<div class="hit"><div class="p">p.' + h.p + '</div>' +
+        '<div class="t">' + mark(snippet(h), S.q) + '</div></div>').join("") +
+      (row.hits.length > 4 ? '<div class="hit"><div class="p"></div><div class="t src">另有 ' +
+        (row.hits.length - 4) + ' 頁命中</div></div>' : "") +
+      '</div>' : "";
+
+  return '<article class="card' + (open ? " open" : "") + '" data-id="' + r.id + '">' +
+    '<div class="spine">' + (pgs.length
+      ? '<span class="pg">' + pgs[0] + '</span><span class="bar"></span>' +
+        '<span class="pg">' + pgs[pgs.length - 1] + '</span>'
+      : '<span class="bar"></span>') + '</div>' +
+    '<div class="card-body">' +
+      '<h2>' + mark(r.title || "", S.q) + '</h2>' +
+      '<p class="byline">' +
+        [esc([a.school, a.name, a.title].filter(Boolean).join("　")),
+         '<span class="src">' + esc(r.id) + '</span>'].filter(Boolean).join("　") +
+      '</p>' +
+      '<div class="tagrow">' + tags + '</div>' +
+      intro +
+      ind +
+      hits +
+      '<div class="more">' + mis + str + mat + assess + links + '</div>' +
+      '<div class="actions">' +
+        '<button class="btn toggle" type="button" aria-expanded="' + open + '">' +
+          (open ? "收合細節" : "展開細節") + '</button>' +
+        (r.links && r.links.length
+          ? '<a class="btn" href="' + esc(primaryLink(r.links)) + '" data-ex="' + esc(r.id) + '" target="_blank" rel="noopener">開啟全文</a>'
+          : (r.pdf && r.pdf.path
+             ? '<a class="btn" href="' + esc(PDF_BASE + encodeURIComponent(r.pdf.path) + "?alt=media") + '" target="_blank" rel="noopener">開啟 PDF</a>' : "")) +
+      '</div>' +
+    '</div></article>';
+}
+
+function render(){
+  const rows = filter();
+  const list = document.getElementById("list");
+
+  // 控制列狀態同步
+  document.querySelectorAll("#scope .chip").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.v === S.scope)));
+  document.querySelectorAll("#grades .chip").forEach(b =>
+    b.setAttribute("aria-pressed", String(Number(b.dataset.v) === S.grade)));
+  document.querySelectorAll("#themes .chip").forEach(b =>
+    b.setAttribute("aria-pressed", String(S.themes.has(b.dataset.v))));
+
+  const pageHits = rows.reduce((s, r) => s + r.hits.length, 0);
+  document.getElementById("tally").innerHTML =
+    "<b>" + rows.length + "</b> / " + S.examples.length + " 筆" +
+    (pageHits ? "　全文 <b>" + pageHits + "</b> 頁" : "") +
+    (S.pagesLoading ? "　載入全文中…" : "");
+
+  if(!rows.length){
+    list.innerHTML = '<div class="msg"><b>沒有符合的示例</b>' +
+      '放寬主題篩選，或把搜尋範圍切到「全部」再試一次。</div>';
+  }else{
+    list.innerHTML = rows.map(card).join("");
+  }
+}
+
+/* ══ 控制列 ════════════════════════════════════════ */
+function chip(label, value, cls){
+  return '<button class="chip ' + (cls || "") + '" type="button" data-v="' + value +
+         '" aria-pressed="false">' + label + '</button>';
+}
+
+function setupControls(){
+  document.getElementById("scope").innerHTML =
+    SCOPES.map(([v, t]) => chip(t, v)).join("");
+  document.getElementById("grades").innerHTML =
+    [chip("全部", 0)].concat([3, 4].map(g => chip(GRADE_NAME[g], g))).join("");
+  document.getElementById("themes").innerHTML =
+    THEME_LIST.map(t => chip(t, t, "theme")).join("");
+
+  document.getElementById("scope").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if(!b) return;
+    S.scope = b.dataset.v;
+    if(needFull() && S.q) ensurePages();
+    render();
+  });
+
+  document.getElementById("grades").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if(!b) return;
+    S.grade = Number(b.dataset.v);
+    render();
+  });
+
+  // 主題可複選；再點一次取消
+  document.getElementById("themes").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if(!b) return;
+    const v = b.dataset.v;
+    S.themes.has(v) ? S.themes.delete(v) : S.themes.add(v);
+    render();
+  });
+
+  const q = document.getElementById("q");
+  let timer = null;
+  q.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      S.q = q.value.trim();
+      if(needFull() && S.q) ensurePages();
+      render();
+    }, 140);
+  });
+
+  document.getElementById("clear").addEventListener("click", () => {
+    q.value = ""; S.q = ""; q.focus(); render();
+  });
+
+  // 展開／收合以事件委派處理，重繪後不需要重新掛事件
+  document.getElementById("list").addEventListener("click", e => {
+    const b = e.target.closest(".toggle"); if(!b) return;
+    const id = b.closest(".card").dataset.id;
+    S.open.has(id) ? S.open.delete(id) : S.open.add(id);
+    render();
+  });
+}
+
+/* ══ 啟動 ══════════════════════════════════════════ */
+(async function init(){
+  setupControls();
+  installLinkDelegation();
+  try{
+    const data = await loadData("examples.json", "__EXAMPLES__");
+    S.examples = data.examples || [];
+    S.meta = data.meta || {};
+  }catch(e){
+    document.getElementById("list").innerHTML =
+      '<div class="msg err"><b>examples.json 載不進來</b>' +
+      '從 file:// 直接開啟時瀏覽器會擋掉本地讀取。改用本機伺服器（' +
+      '<code>python -m http.server</code>），或執行 <code>build_data.py --js</code> ' +
+      '後解開 &lt;head&gt; 裡那兩行 script 註解。<br><span class="src">' +
+      esc(e.message) + '</span></div>';
+    return;
+  }
+  document.getElementById("foot").textContent =
+    S.meta.count + " 筆示例／" + S.meta.page_total + " 頁全文／" +
+    S.meta.misconception_total + " 條迷思概念　建置於 " + (S.meta.generated_at || "");
+  render();
+})();
+</script>
+</body>
+</html>
