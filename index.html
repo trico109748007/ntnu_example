@@ -60,7 +60,8 @@
         --shadow-lift: 0 6px 18px rgba(22, 24, 28, 0.1);
 
         --wrap: 1120px;
-        --fs-scale: 1; /* 預留給字級切換，目前恆為 1 */
+        --fs-scale: 1; /* 全域基準，維持 1；卡片字級另由 --card-scale 控制 */
+        --card-scale: 1; /* 卡片內文字級倍率，只作用於 .card-body */
 
         /* 相容別名：舊選擇器若有殘留引用不致失色 */
         --ink-2: var(--ink-soft);
@@ -330,6 +331,10 @@
         flex: 1;
         padding: 14px 16px;
         min-width: 0;
+        /* 只在卡片內文改寫 --fs-scale：
+           變數會沿著 DOM 往下繼承，因此底下所有用 calc(px * var(--fs-scale))
+           的字級一律跟著縮放；頁首、控制列、頁尾仍讀 :root 的 1，不受影響。 */
+        --fs-scale: var(--card-scale);
       }
 
       .card h2 {
@@ -353,7 +358,7 @@
       }
       .tag {
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.03em;
         padding: 3px 8px;
         border-radius: var(--radius-pill);
@@ -397,7 +402,7 @@
       .ind-kind {
         flex: 0 0 74px;
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.04em;
         color: var(--ink-soft);
         padding-top: 3px;
@@ -411,7 +416,7 @@
       }
       code.code {
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.02em;
         background: var(--link-soft);
         color: var(--link);
@@ -426,7 +431,7 @@
       }
       .ver {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: calc(10px * var(--fs-scale));
         color: var(--ink-soft);
         margin-left: 4px;
       }
@@ -450,7 +455,7 @@
       .sec h3 {
         margin: 0 0 5px;
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: var(--ink);
@@ -469,7 +474,7 @@
       }
       .src {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: calc(10px * var(--fs-scale));
         color: var(--ink-soft);
         margin-left: 5px;
       }
@@ -486,7 +491,7 @@
       }
       .hits h3 {
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: var(--ink);
@@ -505,7 +510,7 @@
       .hit .p {
         flex: 0 0 38px;
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.03em;
         color: var(--accent-ink);
         padding-top: 2px;
@@ -538,7 +543,7 @@
       }
       .btn {
         font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-size: calc(10.5px * var(--fs-scale));
         letter-spacing: 0.02em;
         padding: 4px 9px;
         line-height: 1.6;
@@ -566,7 +571,7 @@
       }
       a.btn::before {
         content: "↗";
-        font-size: 11px;
+        font-size: calc(11px * var(--fs-scale));
         line-height: 1;
       }
       a.btn:hover {
@@ -706,6 +711,33 @@
             style="display: flex; gap: 6px; flex-wrap: wrap"
           ></div>
           <span class="tally" id="tally"></span>
+          <span class="ctl-label" style="min-width: auto">字級</span>
+          <div class="tabs" id="fontsize" role="group" aria-label="卡片字級">
+            <button
+              class="chip"
+              type="button"
+              data-scale="0.9"
+              aria-pressed="false"
+            >
+              小
+            </button>
+            <button
+              class="chip"
+              type="button"
+              data-scale="1"
+              aria-pressed="true"
+            >
+              中
+            </button>
+            <button
+              class="chip"
+              type="button"
+              data-scale="1.15"
+              aria-pressed="false"
+            >
+              大
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1356,6 +1388,21 @@
           S.q = "";
           q.focus();
           render();
+        });
+
+        // 字級切換：只改 --card-scale，卡片以外的版面不動
+        const fs = document.getElementById("fontsize");
+        fs.addEventListener("click", (e) => {
+          const b = e.target.closest(".chip");
+          if (!b) return;
+          document.documentElement.style.setProperty(
+            "--card-scale",
+            b.dataset.scale,
+          );
+          // aria-pressed 與畫面狀態同步，螢幕閱讀器才讀得到目前選項
+          fs.querySelectorAll(".chip").forEach((x) =>
+            x.setAttribute("aria-pressed", String(x === b)),
+          );
         });
 
         // 展開／收合以事件委派處理，重繪後不需要重新掛事件
