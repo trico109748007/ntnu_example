@@ -10,6 +10,9 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap"
       rel="stylesheet"
     />
+    <!-- index.html v1.3.2
+     v1.3.1 四層連結解析、probe／open 分離
+     v1.3.2 上架過濾（hide）：init() 濾除 hide === true；頁尾筆數改用可見筆數 -->
     <!--
   file:// 直接開啟時 fetch 會被 CORS 擋，改用以下兩行載入 build_data.py --js 產出的檔案。
   放在 http 伺服器上時保持註解，程式會走 fetch。
@@ -801,6 +804,7 @@
       /* ══ 狀態 ══════════════════════════════════════════ */
       const S = {
         examples: [], // examples.json 的 examples 陣列
+        hiddenCount: 0, // 被 hide 濾掉的筆數，僅供除錯確認
         meta: {},
         pages: null, // pages.json，延遲載入
         pagesLoading: false,
@@ -1498,7 +1502,12 @@
         installLinkDelegation();
         try {
           const data = await loadData("examples.json", "__EXAMPLES__");
-          S.examples = data.examples || [];
+          // 上架過濾：hide 缺漏即顯示，只有明確 true 才隱藏。
+          // 在此一次濾掉，filter()／fullHits()／連結探測都不會看到下架示例，
+          // 不必在各處逐一判斷，也不會有「搜尋命中但列表不顯示」的空結果。
+          const all = data.examples || [];
+          S.examples = all.filter((r) => r.hide !== true);
+          S.hiddenCount = all.length - S.examples.length;
           S.meta = data.meta || {};
         } catch (e) {
           document.getElementById("list").innerHTML =
@@ -1511,7 +1520,7 @@
           return;
         }
         document.getElementById("foot").textContent =
-          S.meta.count +
+          S.examples.length +
           " 筆示例／" +
           S.meta.page_total +
           " 頁全文／" +
