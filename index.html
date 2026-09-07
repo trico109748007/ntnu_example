@@ -965,9 +965,9 @@
       }
 
       /** 先看 build_data.py --js 塞進 window 的全域變數，沒有才 fetch。
-    Storage 對未指定 Cache-Control 的物件回 max-age=3600，
-    而 Console 上傳無法設定該標頭，故改以 query 破壞快取。
-    原本的 cache:"no-cache" 只作用於瀏覽器快取，對此無效，已移除。 */
+    快取行為由上方 NEED_CACHE_BUST 控制：m34/ 物件帶 must-revalidate，
+    瀏覽器每次發條件式請求，未變更時回 304 只傳標頭。
+    cache:"no-cache" 只作用於瀏覽器快取，對 Storage 端無效，已移除。 */
       async function loadData(name, globalKey) {
         if (window[globalKey]) return window[globalKey];
         const res = await fetch(fbUrl(JSON_DIR + "/" + name, NEED_CACHE_BUST));
