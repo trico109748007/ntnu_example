@@ -1135,7 +1135,7 @@
             "</ul></div>"
           : "";
 
-        const assess = (r.assessment_refs || []).length ? '<div class="sec"><h3>施測期別</h3><ul><li>' + r.assessment_refs.map((x) => esc(x.period || x.raw)).join("、") + "</li></ul></div>" : "";
+        const assess = (r.assessment_refs || []).length ? '<div class="sec"><h3>試題範例</h3><ul><li>' + r.assessment_refs.map((x) => esc(x.period || x.raw)).join("、") + "</li></ul></div>" : "";
 
         const hits = row.hits.length
           ? '<div class="hits"><h3 class="sec" style="margin:0 0 6px">全文命中 ' +
