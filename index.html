@@ -7,10 +7,7 @@
     <title>數學學習疑難與有效教學示例｜檢索</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
     <!-- index.html v1.3.2
      v1.3.1 四層連結解析、probe／open 分離
      v1.3.2 上架過濾（hide）：init() 濾除 hide === true；頁尾筆數改用可見筆數 -->
@@ -51,9 +48,7 @@
         --hit: #f6d9a0;
 
         --font-serif: "Noto Serif TC", "Songti TC", serif;
-        --font-sans:
-          "Noto Sans TC", system-ui, "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
+        --font-sans: "Noto Sans TC", system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
         --font-mono: "JetBrains Mono", ui-monospace, "Consolas", monospace;
 
         --radius: 4px;
@@ -728,16 +723,8 @@
         <div class="ctl-row">
           <span class="ctl-label">搜尋</span>
           <div class="searchbox">
-            <input
-              id="q"
-              type="search"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="輸入關鍵字，例如：等值分數、先乘除後加減、S-4-6"
-            />
-            <button id="clear" type="button" title="清除" aria-label="清除搜尋">
-              ×
-            </button>
+            <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="輸入關鍵字，例如：等值分數、先乘除後加減、S-4-6" />
+            <button id="clear" type="button" title="清除" aria-label="清除搜尋">×</button>
           </div>
           <div class="tabs" id="scope" role="group" aria-label="搜尋範圍"></div>
         </div>
@@ -746,42 +733,13 @@
           <span class="ctl-label">年級</span>
           <div class="tabs" id="grades" role="group" aria-label="年級"></div>
           <span class="ctl-label" style="margin-left: 8px">主題</span>
-          <div
-            id="themes"
-            style="display: flex; gap: 6px; flex-wrap: wrap"
-          ></div>
-          <span
-            class="tally"
-            id="tally"
-            aria-live="polite"
-            aria-atomic="true"
-          ></span>
+          <div id="themes" style="display: flex; gap: 6px; flex-wrap: wrap"></div>
+          <span class="tally" id="tally" aria-live="polite" aria-atomic="true"></span>
           <span class="ctl-label" style="min-width: auto">字級</span>
           <div class="tabs" id="fontsize" role="group" aria-label="卡片字級">
-            <button
-              class="chip"
-              type="button"
-              data-scale="0.9"
-              aria-pressed="false"
-            >
-              小
-            </button>
-            <button
-              class="chip"
-              type="button"
-              data-scale="1"
-              aria-pressed="true"
-            >
-              中
-            </button>
-            <button
-              class="chip"
-              type="button"
-              data-scale="1.15"
-              aria-pressed="false"
-            >
-              大
-            </button>
+            <button class="chip" type="button" data-scale="0.9" aria-pressed="false">小</button>
+            <button class="chip" type="button" data-scale="1" aria-pressed="true">中</button>
+            <button class="chip" type="button" data-scale="1.15" aria-pressed="false">大</button>
           </div>
         </div>
       </div>
@@ -789,12 +747,7 @@
       <h2 id="results-heading" class="sr-only">檢索結果</h2>
       <!-- tabindex="-1"：skip link 的目標必須可程式化聚焦，否則部分瀏覽器
            只捲動而不移轉焦點，後續 Tab 仍回到控制列。 -->
-      <main
-        id="list"
-        tabindex="-1"
-        role="region"
-        aria-labelledby="results-heading"
-      ></main>
+      <main id="list" tabindex="-1" role="region" aria-labelledby="results-heading"></main>
 
       <footer id="foot"></footer>
     </div>
@@ -822,13 +775,7 @@
         ["mis", "迷思概念"],
         ["full", "全文"],
       ];
-      const THEME_LIST = [
-        "數與計算",
-        "量與實測",
-        "空間與形狀",
-        "關係",
-        "資料與不確定性",
-      ];
+      const THEME_LIST = ["數與計算", "量與實測", "空間與形狀", "關係", "資料與不確定性"];
       const GRADE_NAME = { 3: "三年級", 4: "四年級" };
 
       /* ══ 正規化 ════════════════════════════════════════
@@ -874,11 +821,7 @@
         let html = "",
           cur = 0;
         for (const [a, b] of spans) {
-          html +=
-            esc(text.slice(cur, a)) +
-            "<mark>" +
-            esc(text.slice(a, b)) +
-            "</mark>";
+          html += esc(text.slice(cur, a)) + "<mark>" + esc(text.slice(a, b)) + "</mark>";
           cur = b;
         }
         return html + esc(text.slice(cur));
@@ -906,12 +849,7 @@
       function hay(rec) {
         if (rec._hay) return rec._hay;
         const c = rec.curriculum || {};
-        const allInd = [].concat(
-          c.learning_content || [],
-          c.learning_performance || [],
-          c.basic_content || [],
-          c.basic_performance || [],
-        );
+        const allInd = [].concat(c.learning_content || [], c.learning_performance || [], c.basic_content || [], c.basic_performance || []);
 
         const meta = [
           rec.title,
@@ -919,19 +857,11 @@
           (rec.keywords || []).join(" "),
           (rec.themes || []).join(" "),
           (rec.materials || []).join(" "),
-          rec.author
-            ? [rec.author.name, rec.author.title, rec.author.school].join(" ")
-            : "",
+          rec.author ? [rec.author.name, rec.author.title, rec.author.school].join(" ") : "",
           (rec.grade || []).map((g) => GRADE_NAME[g] || "").join(" "),
         ].join(" ");
 
-        const curr = allInd
-          .map((x) =>
-            [x.code, x.alias_in_source, x.source_text]
-              .filter(Boolean)
-              .join(" "),
-          )
-          .join(" ");
+        const curr = allInd.map((x) => [x.code, x.alias_in_source, x.source_text].filter(Boolean).join(" ")).join(" ");
 
         const mis = []
           .concat(
@@ -947,8 +877,7 @@
       /* ══ 資料載入 ══════════════════════════════════════ */
       // 資料檔與 PDF 皆在 Firebase Storage，與前端不同源，
       // 靠 bucket 的 CORS 設定（origin: ["*"]）放行。
-      const FB_BASE =
-        "https://firebasestorage.googleapis.com/v0/b/upload-2a184.appspot.com/o/";
+      const FB_BASE = "https://firebasestorage.googleapis.com/v0/b/upload-2a184.appspot.com/o/";
       const JSON_DIR = "m34"; // JSON 在 Storage 的虛擬目錄
       const PDF_BASE = FB_BASE; // pdf.path 已含 "pdfs/" 前綴，不另加目錄
 
@@ -1033,8 +962,7 @@
       // 以 label 定址而非索引，短網址未填時該層自然跳過，不會錯位。
       // 追加 l.url 檢查：label 存在但 url 為空字串的殘缺紀錄若被選中，
       // primaryLink() 會回傳空 href，點擊等於重新載入本頁。
-      const linkOf = (links, label) =>
-        (links || []).find((l) => l.label === label && l.url) || null;
+      const linkOf = (links, label) => (links || []).find((l) => l.label === label && l.url) || null;
 
       /** 回傳第一個「探測目標可達」的候選之開啟網址；全數不可達則回 null。 */
       async function resolveLink(links) {
@@ -1064,15 +992,7 @@
         document.addEventListener("click", async (e) => {
           const a = e.target.closest("a[data-ex]");
           if (!a) return;
-          if (
-            e.defaultPrevented ||
-            e.button !== 0 ||
-            e.metaKey ||
-            e.ctrlKey ||
-            e.shiftKey ||
-            e.altKey
-          )
-            return;
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
           const rec = S.examples.find((x) => x.id === a.dataset.ex);
           if (!rec || !rec.links) return; // 無 links 時退回 href 原生行為
@@ -1085,10 +1005,7 @@
           try {
             const url = await resolveLink(rec.links);
             if (url) window.open(url, "_blank", "noopener");
-            else
-              alert(
-                "學校空間、Firebase 與短網址服務目前都無法連線，請稍後再試。",
-              );
+            else alert("學校空間、Firebase 與短網址服務目前都無法連線，請稍後再試。");
           } finally {
             delete a.dataset.busy;
           }
@@ -1119,8 +1036,7 @@
 
         for (const rec of S.examples) {
           if (S.grade && !(rec.grade || []).includes(S.grade)) continue;
-          if (S.themes.size && !(rec.themes || []).some((t) => S.themes.has(t)))
-            continue;
+          if (S.themes.size && !(rec.themes || []).some((t) => S.themes.has(t))) continue;
 
           if (!nq) {
             rows.push({ rec, hits: [] });
@@ -1129,9 +1045,7 @@
 
           const h = hay(rec);
           let ok = false;
-          if (S.scope === "all")
-            ok =
-              h.meta.includes(nq) || h.curr.includes(nq) || h.mis.includes(nq);
+          if (S.scope === "all") ok = h.meta.includes(nq) || h.curr.includes(nq) || h.mis.includes(nq);
           else if (S.scope === "curr") ok = h.curr.includes(nq);
           else if (S.scope === "mis") ok = h.mis.includes(nq);
 
@@ -1154,12 +1068,8 @@
               '">' +
               esc(x.code || "") +
               "</code>" +
-              (x.version
-                ? '<span class="ver">' + esc(x.version) + " 年版</span>"
-                : "") +
-              (x.alias_in_source
-                ? '<span class="ver">同 ' + esc(x.alias_in_source) + "</span>"
-                : "") +
+              (x.version ? '<span class="ver">' + esc(x.version) + " 年版</span>" : "") +
+              (x.alias_in_source ? '<span class="ver">同 ' + esc(x.alias_in_source) + "</span>" : "") +
               "<div>" +
               mark(x.source_text || "", S.q) +
               "</div>" +
@@ -1167,15 +1077,7 @@
             );
           })
           .join("");
-        return (
-          '<div class="ind-line"><div class="ind-kind">' +
-          kind +
-          '</div><div class="ind-text ' +
-          (cls || "") +
-          '">' +
-          body +
-          "</div></div>"
-        );
+        return '<div class="ind-line"><div class="ind-kind">' + kind + '</div><div class="ind-text ' + (cls || "") + '">' + body + "</div></div>";
       }
 
       function snippet(hit) {
@@ -1194,64 +1096,27 @@
         const a = r.author || {};
 
         const tags =
-          (r.grade || [])
-            .map(
-              (g) =>
-                '<span class="tag grade">' + (GRADE_NAME[g] || g) + "</span>",
-            )
-            .join("") +
-          (r.themes || [])
-            .map((t) => '<span class="tag theme">' + esc(t) + "</span>")
-            .join("") +
-          (r.low_pass_years && r.low_pass_years.length
-            ? '<span class="tag">低通過率 ' +
-              r.low_pass_years.join("、") +
-              "</span>"
-            : "");
+          (r.grade || []).map((g) => '<span class="tag grade">' + (GRADE_NAME[g] || g) + "</span>").join("") +
+          (r.themes || []).map((t) => '<span class="tag theme">' + esc(t) + "</span>").join("") +
+          (r.low_pass_years && r.low_pass_years.length ? '<span class="tag">低通過率 ' + r.low_pass_years.join("、") + "</span>" : "");
 
-        const intro = (r.introduction || "").trim()
-          ? '<p class="intro">' + mark(r.introduction, S.q) + "</p>"
-          : "";
+        const intro = (r.introduction || "").trim() ? '<p class="intro">' + mark(r.introduction, S.q) + "</p>" : "";
 
         // 導論一類的文件沒有課綱指標，整個 .ind 區塊就不輸出，避免留下空的分隔線
-        const indBody =
-          indLine("學習內容", c.learning_content) +
-          indLine("學習表現", c.learning_performance) +
-          indLine("基本學習內容", c.basic_content) +
-          indLine("基本學習表現", c.basic_performance);
+        const indBody = indLine("學習內容", c.learning_content) + indLine("學習表現", c.learning_performance) + indLine("基本學習內容", c.basic_content) + indLine("基本學習表現", c.basic_performance);
         const ind = indBody ? '<div class="ind">' + indBody + "</div>" : "";
 
         const mis = (r.misconceptions || []).length
           ? '<div class="sec"><h3>迷思概念（' +
             r.misconceptions.length +
             '）</h3><ol class="mis">' +
-            r.misconceptions
-              .map(
-                (m) =>
-                  "<li>" +
-                  mark(m.text, S.q) +
-                  (m.source
-                    ? '<span class="src">' + esc(m.source) + "</span>"
-                    : "") +
-                  "</li>",
-              )
-              .join("") +
+            r.misconceptions.map((m) => "<li>" + mark(m.text, S.q) + (m.source ? '<span class="src">' + esc(m.source) + "</span>" : "") + "</li>").join("") +
             "</ol></div>"
           : "";
 
-        const str = (r.strategies || []).length
-          ? '<div class="sec"><h3>教學策略</h3><ol>' +
-            r.strategies
-              .map((s) => "<li>" + mark(s.title, S.q) + "</li>")
-              .join("") +
-            "</ol></div>"
-          : "";
+        const str = (r.strategies || []).length ? '<div class="sec"><h3>教學策略</h3><ol>' + r.strategies.map((s) => "<li>" + mark(s.title, S.q) + "</li>").join("") + "</ol></div>" : "";
 
-        const mat = (r.materials || []).length
-          ? '<div class="sec"><h3>教材教具</h3><ul><li>' +
-            r.materials.map((m) => mark(m, S.q)).join("、") +
-            "</li></ul></div>"
-          : "";
+        const mat = (r.materials || []).length ? '<div class="sec"><h3>教材教具</h3><ul><li>' + r.materials.map((m) => mark(m, S.q)).join("、") + "</li></ul></div>" : "";
 
         const links = (r.external_links || []).length
           ? '<div class="sec"><h3>延伸資源</h3><ul>' +
@@ -1263,20 +1128,14 @@
                   '" target="_blank" rel="noopener">' +
                   esc(l.label || l.url) +
                   '<span class="sr-only">（另開新視窗）</span></a>' +
-                  (l.context
-                    ? '<span class="src">' + esc(l.context) + "</span>"
-                    : "") +
+                  (l.context ? '<span class="src">' + esc(l.context) + "</span>" : "") +
                   "</li>",
               )
               .join("") +
             "</ul></div>"
           : "";
 
-        const assess = (r.assessment_refs || []).length
-          ? '<div class="sec"><h3>施測期別</h3><ul><li>' +
-            r.assessment_refs.map((x) => esc(x.period || x.raw)).join("、") +
-            "</li></ul></div>"
-          : "";
+        const assess = (r.assessment_refs || []).length ? '<div class="sec"><h3>施測期別</h3><ul><li>' + r.assessment_refs.map((x) => esc(x.period || x.raw)).join("、") + "</li></ul></div>" : "";
 
         const hits = row.hits.length
           ? '<div class="hits"><h3 class="sec" style="margin:0 0 6px">全文命中 ' +
@@ -1284,21 +1143,9 @@
             " 頁</h3>" +
             row.hits
               .slice(0, 4)
-              .map(
-                (h) =>
-                  '<div class="hit"><div class="p">p.' +
-                  h.p +
-                  "</div>" +
-                  '<div class="t">' +
-                  mark(snippet(h), S.q) +
-                  "</div></div>",
-              )
+              .map((h) => '<div class="hit"><div class="p">p.' + h.p + "</div>" + '<div class="t">' + mark(snippet(h), S.q) + "</div></div>")
               .join("") +
-            (row.hits.length > 4
-              ? '<div class="hit"><div class="p"></div><div class="t src">另有 ' +
-                (row.hits.length - 4) +
-                " 頁命中</div></div>"
-              : "") +
+            (row.hits.length > 4 ? '<div class="hit"><div class="p"></div><div class="t src">另有 ' + (row.hits.length - 4) + " 頁命中</div></div>" : "") +
             "</div>"
           : "";
 
@@ -1309,26 +1156,14 @@
           r.id +
           '">' +
           '<div class="spine">' +
-          (pgs.length
-            ? '<span class="pg">' +
-              pgs[0] +
-              '</span><span class="bar"></span>' +
-              '<span class="pg">' +
-              pgs[pgs.length - 1] +
-              "</span>"
-            : '<span class="bar"></span>') +
+          (pgs.length ? '<span class="pg">' + pgs[0] + '</span><span class="bar"></span>' + '<span class="pg">' + pgs[pgs.length - 1] + "</span>" : '<span class="bar"></span>') +
           "</div>" +
           '<div class="card-body">' +
           "<h2>" +
           mark(r.title || "", S.q) +
           "</h2>" +
           '<p class="byline">' +
-          [
-            esc([a.school, a.name, a.title].filter(Boolean).join("　")),
-            '<span class="src">' + esc(r.id) + "</span>",
-          ]
-            .filter(Boolean)
-            .join("　") +
+          [esc([a.school, a.name, a.title].filter(Boolean).join("　")), '<span class="src">' + esc(r.id) + "</span>"].filter(Boolean).join("　") +
           "</p>" +
           '<div class="tagrow">' +
           tags +
@@ -1350,12 +1185,7 @@
           (open ? "收合細節" : "展開細節") +
           "</button>" +
           (r.links && r.links.length
-            ? '<a class="btn" href="' +
-              esc(primaryLink(r.links)) +
-              '" data-ex="' +
-              esc(r.id) +
-              '" target="_blank" rel="noopener">開啟全文' +
-              '<span class="sr-only">（PDF，另開新視窗）</span></a>'
+            ? '<a class="btn" href="' + esc(primaryLink(r.links)) + '" data-ex="' + esc(r.id) + '" target="_blank" rel="noopener">開啟全文' + '<span class="sr-only">（PDF，另開新視窗）</span></a>'
             : r.pdf && r.pdf.path
               ? '<a class="btn" href="' +
                 esc(PDF_BASE + encodeURIComponent(r.pdf.path) + "?alt=media") +
@@ -1372,39 +1202,16 @@
         const list = document.getElementById("list");
 
         // 控制列狀態同步
-        document
-          .querySelectorAll("#scope .chip")
-          .forEach((b) =>
-            b.setAttribute("aria-pressed", String(b.dataset.v === S.scope)),
-          );
-        document
-          .querySelectorAll("#grades .chip")
-          .forEach((b) =>
-            b.setAttribute(
-              "aria-pressed",
-              String(Number(b.dataset.v) === S.grade),
-            ),
-          );
-        document
-          .querySelectorAll("#themes .chip")
-          .forEach((b) =>
-            b.setAttribute("aria-pressed", String(S.themes.has(b.dataset.v))),
-          );
+        document.querySelectorAll("#scope .chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === S.scope)));
+        document.querySelectorAll("#grades .chip").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.v) === S.grade)));
+        document.querySelectorAll("#themes .chip").forEach((b) => b.setAttribute("aria-pressed", String(S.themes.has(b.dataset.v))));
 
         const pageHits = rows.reduce((s, r) => s + r.hits.length, 0);
         document.getElementById("tally").innerHTML =
-          "<b>" +
-          rows.length +
-          "</b> / " +
-          S.examples.length +
-          " 筆" +
-          (pageHits ? "　全文 <b>" + pageHits + "</b> 頁" : "") +
-          (S.pagesLoading ? "　載入全文中…" : "");
+          "<b>" + rows.length + "</b> / " + S.examples.length + " 筆" + (pageHits ? "　全文 <b>" + pageHits + "</b> 頁" : "") + (S.pagesLoading ? "　載入全文中…" : "");
 
         if (!rows.length) {
-          list.innerHTML =
-            '<div class="msg"><b>沒有符合的示例</b>' +
-            "放寬主題篩選，或把搜尋範圍切到「全部」再試一次。</div>";
+          list.innerHTML = '<div class="msg"><b>沒有符合的示例</b>' + "放寬主題篩選，或把搜尋範圍切到「全部」再試一次。</div>";
         } else {
           list.innerHTML = rows.map(card).join("");
         }
@@ -1412,27 +1219,13 @@
 
       /* ══ 控制列 ════════════════════════════════════════ */
       function chip(label, value, cls) {
-        return (
-          '<button class="chip ' +
-          (cls || "") +
-          '" type="button" data-v="' +
-          value +
-          '" aria-pressed="false">' +
-          label +
-          "</button>"
-        );
+        return '<button class="chip ' + (cls || "") + '" type="button" data-v="' + value + '" aria-pressed="false">' + label + "</button>";
       }
 
       function setupControls() {
-        document.getElementById("scope").innerHTML = SCOPES.map(([v, t]) =>
-          chip(t, v),
-        ).join("");
-        document.getElementById("grades").innerHTML = [chip("全部", 0)]
-          .concat([3, 4].map((g) => chip(GRADE_NAME[g], g)))
-          .join("");
-        document.getElementById("themes").innerHTML = THEME_LIST.map((t) =>
-          chip(t, t, "theme"),
-        ).join("");
+        document.getElementById("scope").innerHTML = SCOPES.map(([v, t]) => chip(t, v)).join("");
+        document.getElementById("grades").innerHTML = [chip("全部", 0)].concat([3, 4].map((g) => chip(GRADE_NAME[g], g))).join("");
+        document.getElementById("themes").innerHTML = THEME_LIST.map((t) => chip(t, t, "theme")).join("");
 
         document.getElementById("scope").addEventListener("click", (e) => {
           const b = e.target.closest(".chip");
@@ -1481,14 +1274,9 @@
         fs.addEventListener("click", (e) => {
           const b = e.target.closest(".chip");
           if (!b) return;
-          document.documentElement.style.setProperty(
-            "--card-scale",
-            b.dataset.scale,
-          );
+          document.documentElement.style.setProperty("--card-scale", b.dataset.scale);
           // aria-pressed 與畫面狀態同步，螢幕閱讀器才讀得到目前選項
-          fs.querySelectorAll(".chip").forEach((x) =>
-            x.setAttribute("aria-pressed", String(x === b)),
-          );
+          fs.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
         });
 
         // 展開／收合以事件委派處理，重繪後不需要重新掛事件
@@ -1525,13 +1313,7 @@
           return;
         }
         document.getElementById("foot").textContent =
-          S.examples.length +
-          " 筆示例／" +
-          S.meta.page_total +
-          " 頁全文／" +
-          S.meta.misconception_total +
-          " 條迷思概念　建置於 " +
-          (S.meta.generated_at || "");
+          S.examples.length + " 筆示例／" + S.meta.page_total + " 頁全文／" + S.meta.misconception_total + " 條迷思概念　建置於 " + (S.meta.generated_at || "");
         render();
       })();
     </script>
