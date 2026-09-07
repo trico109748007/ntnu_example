@@ -97,6 +97,41 @@
         outline-offset: 2px;
       }
 
+      /* 螢幕閱讀器專用：視覺上不可見，但仍在無障礙樹中。
+         不用 display:none／visibility:hidden，那兩者會一併移出無障礙樹。 */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* 鍵盤跳離控制列：平時移出畫面，取得焦點時才滑入。
+         z-index 需高於 .controls 的 sticky（20），否則會被吸頂列蓋住。 */
+      .skip-link {
+        position: absolute;
+        left: 8px;
+        top: -48px;
+        z-index: 1100;
+        background: var(--ink);
+        color: #fff;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        text-decoration: none;
+        transition: top 0.15s;
+      }
+      .skip-link:focus {
+        top: 8px;
+      }
+      #list:focus {
+        outline: none;
+      }
+
       .wrap {
         max-width: var(--wrap);
         width: 100%;
@@ -677,6 +712,7 @@
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#list">跳到主要內容</a>
     <div class="wrap">
       <header class="masthead">
         <p class="eyebrow">國小中年級低成就學生</p>
@@ -710,7 +746,12 @@
             id="themes"
             style="display: flex; gap: 6px; flex-wrap: wrap"
           ></div>
-          <span class="tally" id="tally"></span>
+          <span
+            class="tally"
+            id="tally"
+            aria-live="polite"
+            aria-atomic="true"
+          ></span>
           <span class="ctl-label" style="min-width: auto">字級</span>
           <div class="tabs" id="fontsize" role="group" aria-label="卡片字級">
             <button
@@ -741,7 +782,15 @@
         </div>
       </div>
 
-      <main id="list"></main>
+      <h2 id="results-heading" class="sr-only">檢索結果</h2>
+      <!-- tabindex="-1"：skip link 的目標必須可程式化聚焦，否則部分瀏覽器
+           只捲動而不移轉焦點，後續 Tab 仍回到控制列。 -->
+      <main
+        id="list"
+        tabindex="-1"
+        role="region"
+        aria-labelledby="results-heading"
+      ></main>
 
       <footer id="foot"></footer>
     </div>
@@ -830,10 +879,19 @@
         return html + esc(text.slice(cur));
       }
 
+      // 一併跳脫單引號：本檔屬性雖統一用雙引號，但 esc() 是通用工具，
+      // 日後若有以單引號包裹的屬性，缺這一項會形成注入缺口。
       function esc(s) {
         return String(s).replace(
-          /[&<>"]/g,
-          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
         );
       }
 
@@ -948,7 +1006,10 @@
         if (linkHealth.has(url)) return linkHealth.get(url);
         let ok = false;
         try {
+          // 用 HEAD 而非 GET：探測目標是直連 PDF，GET 會在背景把整份檔案
+          // 拉下來，探測數十筆等於憑空多出可觀流量。
           await fetch(url, {
+            method: "HEAD",
             mode: "no-cors",
             signal: AbortSignal.timeout(timeoutMs),
           });
@@ -960,8 +1021,11 @@
         return ok;
       }
 
+      // 以 label 定址而非索引，短網址未填時該層自然跳過，不會錯位。
+      // 追加 l.url 檢查：label 存在但 url 為空字串的殘缺紀錄若被選中，
+      // primaryLink() 會回傳空 href，點擊等於重新載入本頁。
       const linkOf = (links, label) =>
-        (links || []).find((l) => l.label === label) || null;
+        (links || []).find((l) => l.label === label && l.url) || null;
 
       /** 回傳第一個「探測目標可達」的候選之開啟網址；全數不可達則回 null。 */
       async function resolveLink(links) {
@@ -969,6 +1033,9 @@
           const open = linkOf(links, step.open);
           const probe = linkOf(links, step.probe);
           if (!open || !probe) continue; // 短網址未填時該層跳過
+          // 安全閥：probe 一旦指到計點網址就跳過該層。寧可降級到下一層，
+          // 也不讓探測本身污染 supr.link 的點擊統計。
+          if (probe.tracked === true) continue;
           if (await probeReachable(probe.url)) return open.url;
         }
         return null;
@@ -1002,12 +1069,20 @@
           if (!rec || !rec.links) return; // 無 links 時退回 href 原生行為
 
           e.preventDefault();
-          const url = await resolveLink(rec.links);
-          if (url) window.open(url, "_blank", "noopener");
-          else
-            alert(
-              "學校空間、Firebase 與短網址服務目前都無法連線，請稍後再試。",
-            );
+          // 探測最長可耗 4 × 1500 ms，這段期間重複點擊會各自跑完一輪並各開
+          // 一個分頁。以節點上的 busy 旗標擋掉後續點擊，解析結束才釋放。
+          if (a.dataset.busy === "1") return;
+          a.dataset.busy = "1";
+          try {
+            const url = await resolveLink(rec.links);
+            if (url) window.open(url, "_blank", "noopener");
+            else
+              alert(
+                "學校空間、Firebase 與短網址服務目前都無法連線，請稍後再試。",
+              );
+          } finally {
+            delete a.dataset.busy;
+          }
         });
       }
       /* ══ 篩選與比對 ════════════════════════════════════ */
@@ -1178,7 +1253,7 @@
                   esc(l.url) +
                   '" target="_blank" rel="noopener">' +
                   esc(l.label || l.url) +
-                  "</a>" +
+                  '<span class="sr-only">（另開新視窗）</span></a>' +
                   (l.context
                     ? '<span class="src">' + esc(l.context) + "</span>"
                     : "") +
@@ -1270,11 +1345,13 @@
               esc(primaryLink(r.links)) +
               '" data-ex="' +
               esc(r.id) +
-              '" target="_blank" rel="noopener">開啟全文</a>'
+              '" target="_blank" rel="noopener">開啟全文' +
+              '<span class="sr-only">（PDF，另開新視窗）</span></a>'
             : r.pdf && r.pdf.path
               ? '<a class="btn" href="' +
                 esc(PDF_BASE + encodeURIComponent(r.pdf.path) + "?alt=media") +
-                '" target="_blank" rel="noopener">開啟 PDF</a>'
+                '" target="_blank" rel="noopener">開啟 PDF' +
+                '<span class="sr-only">（PDF，另開新視窗）</span></a>'
               : "") +
           "</div>" +
           "</div></article>"
