@@ -951,6 +951,10 @@
       const JSON_DIR = "m34"; // JSON 在 Storage 的虛擬目錄
       const PDF_BASE = FB_BASE; // pdf.path 已含 "pdfs/" 前綴，不另加目錄
 
+      // m34/ 的 JSON 由 upload_example.py 上傳，帶 must-revalidate，
+      // 不需 query 破壞快取。改回 Console 上傳時設為 true。
+      const NEED_CACHE_BUST = false;
+
       /** 組出 Storage 的無 token 下載 URL。
     路徑分隔符必須編成 %2F，否則端點會解讀為 REST 路徑層級而非物件名稱，
     故用 encodeURIComponent（不保留斜線）而非 encodeURI。 */
@@ -965,7 +969,7 @@
     原本的 cache:"no-cache" 只作用於瀏覽器快取，對此無效，已移除。 */
       async function loadData(name, globalKey) {
         if (window[globalKey]) return window[globalKey];
-        const res = await fetch(fbUrl(JSON_DIR + "/" + name, true));
+        const res = await fetch(fbUrl(JSON_DIR + "/" + name, NEED_CACHE_BUST));
         if (!res.ok) throw new Error(name + " 回應 " + res.status);
         return res.json();
       }
