@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
-    <!-- index.html v1.3.2
+    <!-- index.html v1.4
      v1.3.1 四層連結解析、probe／open 分離
-     v1.3.2 上架過濾（hide）：init() 濾除 hide === true；頁尾筆數改用可見筆數 -->
+     v1.3.2 上架過濾（hide）：init() 濾除 hide === true；頁尾筆數改用可見筆數
+     v1.4   試題範例顯示題號：assessment_refs.items 非空時附加；每筆獨立 li -->
     <!--
   file:// 直接開啟時 fetch 會被 CORS 擋，改用以下兩行載入 build_data.py --js 產出的檔案。
   放在 http 伺服器上時保持註解，程式會走 fetch。
@@ -1135,7 +1136,21 @@
             "</ul></div>"
           : "";
 
-        const assess = (r.assessment_refs || []).length ? '<div class="sec"><h3>試題範例</h3><ul><li>' + r.assessment_refs.map((x) => esc(x.period || x.raw)).join("、") + "</li></ul></div>" : "";
+        const assess = (r.assessment_refs || []).length
+          ? '<div class="sec"><h3>試題範例</h3><ul>' +
+            r.assessment_refs
+              .map((x) => {
+                // items 鍵可能整個缺席（非 null 亦非 []），先正規化為陣列再判長度
+                const its = Array.isArray(x.items) ? x.items.filter((n) => n !== null && n !== undefined && n !== "") : [];
+                // period 有值 → 以 period 為主體，題號另行附加
+                // period 為 null → 退回 raw，raw 原文已含題號，不再附加以免重複
+                const base = x.period || x.raw || "";
+                const no = x.period && its.length ? '<span class="src">第 ' + esc(its.join("、")) + " 題</span>" : "";
+                return base || no ? "<li>" + esc(base) + no + "</li>" : "";
+              })
+              .join("") +
+            "</ul></div>"
+          : "";
 
         const hits = row.hits.length
           ? '<div class="hits"><h3 class="sec" style="margin:0 0 6px">全文命中 ' +
